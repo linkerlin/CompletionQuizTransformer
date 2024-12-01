@@ -61,21 +61,30 @@ function completion_quiz_inline_script() {
             $(document).on('keypress', '.fill-blank', function (e) {
                 if (e.which === 13) { // 回车键
                     e.preventDefault();
-                    const userAnswer = $(this).text().trim();
-                    const correctAnswer = $(this).closest('.completion-quiz').data('answer');
+                    const $this = $(this);
+                    const userAnswer = $this.text().trim();
+                    const correctAnswer = $this.closest('.completion-quiz').data('answer');
 
                     // 移除之前的反馈
-                    $(this).siblings('.feedback, .correct-answer').remove();
+                    $this.siblings('.feedback, .correct-answer').remove();
 
                     if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
-                        $(this).css('background-color', 'lightgreen').after('<span class="feedback">√</span>');
+                        $this.css('background-color', 'lightgreen')
+                             .after('<span class="feedback">√</span>');
                     } else {
-                        $(this).css('background-color', 'pink').after('<span class="feedback">×</span>');
+                        $this.css('background-color', 'pink')
+                             .after('<span class="feedback">×</span>');
+                        
+                        // 5秒后显示正确答案
                         setTimeout(() => {
-                            $(this).text(correctAnswer)
-                                  .css('background-color', '')
-                                  .siblings('.feedback')
-                                  .after('<span class="correct-answer">（正确答案：' + correctAnswer + '）</span>');
+                            $this.text(correctAnswer)
+                                .css('background-color', '');
+                            
+                            // 确保正确答案文本被正确插入
+                            if ($this.siblings('.correct-answer').length === 0) {
+                                $this.siblings('.feedback')
+                                     .after('<span class="correct-answer">（正确答案：' + correctAnswer + '）</span>');
+                            }
                         }, 5000);
                     }
                 }
