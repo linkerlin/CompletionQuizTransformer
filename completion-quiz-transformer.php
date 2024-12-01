@@ -38,7 +38,7 @@ function completion_quiz_transformer_content($content) {
         error_log('找到需要转换的文本: ' . $text);
         
         // 确保文本被正确转义
-        $escaped_text = esc_attr($text);
+        $escaped_text = esc_attr($text); // 改用 esc_attr 替代 esc_js
         
         error_log('转义后的文本: ' . $escaped_text);
 
@@ -51,30 +51,17 @@ function completion_quiz_transformer_content($content) {
         );
     }, $content);
 
-    // 将内容按段落分割
-    $paragraphs = explode('</p>', $content);
-    
-    // 处理每个段落
-    foreach ($paragraphs as &$paragraph) {
-        // 如果段落中包含填空题
-        if (strpos($paragraph, 'completion-quiz') !== false) {
-            // 在段落末尾添加按钮
-            $paragraph .= '<div class="completion-quiz-controls">
-                            <button class="show-answers">显</button>
-                            <button class="clear-answers">清</button>
-                        </div>';
-        }
-        // 重新添加段落结束标签（除非是最后一个空段落）
-        if (trim($paragraph) !== '') {
-            $paragraph .= '</p>';
-        }
-    }
-
-    // 重新组合内容
-    $content = implode('', $paragraphs);
+    // 在每段落后面添加显示答案和清除答案按钮
+    $content .= '<div class="completion-quiz-controls">
+                    <button class="show-answers">显示答案</button>
+                    <button class="clear-answers">清除答案</button>
+                </div>';
 
     return $content;
 }
+
+// 插件主过滤器：修改文章内容
+add_filter('the_content', 'completion_quiz_transformer_content');
 
 // 加载脚本和样式
 add_action('wp_enqueue_scripts', 'completion_quiz_enqueue_scripts');
