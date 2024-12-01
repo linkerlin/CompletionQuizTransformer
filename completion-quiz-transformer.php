@@ -62,15 +62,20 @@ function completion_quiz_inline_script() {
                 if (e.which === 13) { // 回车键
                     e.preventDefault();
                     const userAnswer = $(this).text().trim();
-                    const correctAnswer = $(this).closest('.completion-quiz').data('answer').trim();
+                    const correctAnswer = $(this).closest('.completion-quiz').data('answer');
+
+                    // 移除之前的反馈
+                    $(this).siblings('.feedback, .correct-answer').remove();
 
                     if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
                         $(this).css('background-color', 'lightgreen').after('<span class="feedback">√</span>');
                     } else {
                         $(this).css('background-color', 'pink').after('<span class="feedback">×</span>');
-                        const $this = $(this);
                         setTimeout(() => {
-                            $this.text(correctAnswer).css('background-color', '').after('<span class="correct-answer">(正确答案: ' + correctAnswer + ')</span>');
+                            $(this).text(correctAnswer)
+                                  .css('background-color', '')
+                                  .siblings('.feedback')
+                                  .after('<span class="correct-answer">（正确答案：' + correctAnswer + '）</span>');
                         }, 5000);
                     }
                 }
