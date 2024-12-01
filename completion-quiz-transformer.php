@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Completion Quiz Transformer
  * Description: 自动将文章正文中的关键语句改造成填空题，通过交互完成完形填空功能。
- * Version: 1.0
+ * Version: 1.1
  * Author: Halo Master
  */
 
@@ -66,24 +66,20 @@ function completion_quiz_inline_script() {
                     const correctAnswer = $this.closest('.completion-quiz').data('answer');
 
                     // 移除之前的反馈
-                    $this.siblings('.feedback, .correct-answer').remove();
+                    $this.siblings('.feedback').remove();
 
                     if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
-                        $this.css('background-color', 'lightgreen')
+                        // 用户答案正确
+                        $this.text(correctAnswer).css('background-color', 'lightgreen')
                              .after('<span class="feedback">√</span>');
                     } else {
+                        // 用户答案错误
                         $this.css('background-color', 'pink')
                              .after('<span class="feedback">×</span>');
                         
-                        // 5秒后显示正确答案
+                        // 5秒后直接填入正确答案
                         setTimeout(() => {
-                            // 直接将正确答案填入填空区域
-                            $this.empty().append(document.createTextNode(correctAnswer))
-                                .css('background-color', '');
-                            
-                            // 添加正确答案提示
-                            $this.siblings('.feedback')
-                                 .after('<span class="correct-answer">（正确答案：' + correctAnswer + '）</span>');
+                            $this.text(correctAnswer).css('background-color', 'lightyellow'); // 填空区域显示正确答案
                         }, 5000);
                     }
                 }
@@ -93,7 +89,7 @@ function completion_quiz_inline_script() {
             $(document).on('click', '.show-answers', function () {
                 $('.completion-quiz').each(function () {
                     const answer = $(this).data('answer');
-                    $(this).find('.fill-blank').text(answer);
+                    $(this).find('.fill-blank').text(answer).css('background-color', 'lightyellow');
                 });
             });
 
@@ -101,7 +97,7 @@ function completion_quiz_inline_script() {
             $(document).on('click', '.clear-answers', function () {
                 $('.completion-quiz').each(function () {
                     $(this).find('.fill-blank').text('_____').css('background-color', '');
-                    $(this).find('.feedback, .correct-answer').remove();
+                    $(this).find('.feedback').remove();
                 });
             });
         });
@@ -137,12 +133,6 @@ function completion_quiz_inline_style() {
             color: #000;
         }
 
-        .correct-answer {
-            margin-left: 10px;
-            font-style: italic;
-            color: #888;
-        }
-
         .completion-quiz-controls {
             margin-top: 20px;
         }
@@ -151,6 +141,10 @@ function completion_quiz_inline_style() {
             margin-right: 10px;
             padding: 5px 10px;
             cursor: pointer;
+        }
+
+        .completion-quiz .feedback {
+            font-size: 1rem;
         }
     </style>
     <?php
