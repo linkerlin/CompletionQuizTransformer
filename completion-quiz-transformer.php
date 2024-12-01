@@ -63,42 +63,70 @@ function completion_quiz_inline_script() {
                     e.preventDefault();
                     const $this = $(this);
                     const userAnswer = $this.text().trim();
-                    const correctAnswer = $this.closest('.completion-quiz').data('answer');
+                    const $quizContainer = $this.closest('.completion-quiz');
+                    const correctAnswer = $quizContainer.data('answer');
+
+                    console.log('用户输入:', userAnswer);
+                    console.log('正确答案:', correctAnswer);
+                    console.log('答案容器:', $quizContainer);
+                    console.log('答案数据属性:', $quizContainer.data());
 
                     // 移除之前的反馈
-                    $this.siblings('.feedback').remove();
+                    $this.siblings('.feedback, .correct-answer').remove();
 
                     if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                        console.log('答案正确！');
                         $this.css('background-color', 'lightgreen')
-                             .after('<span class="feedback">√</span>')
-                             .text(correctAnswer);  // 显示正确的大小写形式
+                             .after('<span class="feedback">√</span>');
                     } else {
+                        console.log('答案错误，将在5秒后显示正确答案');
                         $this.css('background-color', 'pink')
                              .after('<span class="feedback">×</span>');
                         
-                        // 5秒后自动填入正确答案
+                        // 5秒后显示正确答案
                         setTimeout(() => {
-                            $this.text(correctAnswer)  // 填入正确答案
-                                .css('background-color', '');  // 移除背景色
-                            $this.siblings('.feedback').remove();  // 移除对错标记
+                            console.log('开始显示正确答案');
+                            console.log('正确答案内容:', correctAnswer);
+                            
+                            // 确保正确答案存在
+                            if (!correctAnswer) {
+                                console.error('错误：未能获取到正确答案');
+                                return;
+                            }
+
+                            // 使用text()方法设置内容
+                            $this.text(correctAnswer)
+                                 .css('background-color', '');
+                            
+                            console.log('已设置答案到填空处');
+                            console.log('当前填空内容:', $this.text());
+
+                            // 添加正确答案提示
+                            $this.siblings('.feedback')
+                                 .after('<span class="correct-answer">（正确答案：' + correctAnswer + '）</span>');
+                            
+                            console.log('完成答案显示流程');
                         }, 5000);
                     }
                 }
             });
 
-            // 显示答案
+            // 显示答案按钮的处理
             $(document).on('click', '.show-answers', function () {
+                console.log('点击显示答案按钮');
                 $('.completion-quiz').each(function () {
                     const answer = $(this).data('answer');
+                    console.log('显示答案:', answer);
                     $(this).find('.fill-blank').text(answer);
                 });
             });
 
-            // 清除答案
+            // 清除答案按钮的处理
             $(document).on('click', '.clear-answers', function () {
+                console.log('点击清除答案按钮');
                 $('.completion-quiz').each(function () {
                     $(this).find('.fill-blank').text('_____').css('background-color', '');
-                    $(this).find('.feedback').remove();
+                    $(this).find('.feedback, .correct-answer').remove();
                 });
             });
         });
