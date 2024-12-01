@@ -77,7 +77,7 @@ function completion_quiz_inline_script() {
                     const $this = $(this);
                     const $quizContainer = $this.closest('.completion-quiz');
                     const userAnswer = $this.text().trim();
-                    const correctAnswer = $quizContainer.attr('data-answer'); // 使用 attr 替代 data
+                    const correctAnswer = $quizContainer.attr('data-answer');
 
                     console.log('按下回车键');
                     console.log('用户输入:', userAnswer);
@@ -106,18 +106,16 @@ function completion_quiz_inline_script() {
                         
                         setTimeout(() => {
                             console.log('开始显示正确答案');
-                            console.log('正确答案内容:', correctAnswer);
                             
+                            // 清理所有反馈标记
+                            $this.siblings('.feedback, .correct-answer').remove();
+                            
+                            // 设置正确答案
                             $this.text(correctAnswer)
                                 .css('background-color', '');
                             
                             console.log('已设置答案到填空处');
                             console.log('当前填空内容:', $this.text());
-                            
-                            $this.siblings('.feedback')
-                                 .after('<span class="correct-answer">（正确答案：' + correctAnswer + '）</span>');
-                            
-                            console.log('完成答案显示流程');
                         }, 5000);
                     }
                 }
