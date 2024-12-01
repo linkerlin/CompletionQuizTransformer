@@ -17,16 +17,29 @@ function completion_quiz_transformer_content($content) {
     // 正则匹配斜体或粗体内容
     $pattern = '/<em>(.*?)<\/em>|<strong>(.*?)<\/strong>/i';
 
+    // 添加调试输出
+    error_log('开始处理内容转换');
+
     // 替换逻辑
     $content = preg_replace_callback($pattern, function ($matches) {
         // 提取内容
-        $text = $matches[1] ?? $matches[2];
-        $escaped_text = esc_js($text); // 转义用于 JavaScript 的文本
+        $text = !empty($matches[1]) ? $matches[1] : $matches[2];
+        
+        // 调试输出
+        error_log('找到需要转换的文本: ' . $text);
+        
+        // 确保文本被正确转义
+        $escaped_text = esc_attr($text); // 改用 esc_attr 替代 esc_js
+        
+        error_log('转义后的文本: ' . $escaped_text);
 
-        // 替换为填空题的 HTML
-        return "<span class='completion-quiz' data-answer='{$escaped_text}'>
-                    <span class='fill-blank' contenteditable='true'>_____</span>
-                </span>";
+        // 替换为填空题的 HTML，确保使用单引号包裹属性值
+        return sprintf(
+            '<span class="completion-quiz" data-answer="%s">
+                <span class="fill-blank" contenteditable="true">_____</span>
+            </span>',
+            $escaped_text
+        );
     }, $content);
 
     // 在每段落后面添加显示答案和清除答案按钮
@@ -62,14 +75,22 @@ function completion_quiz_inline_script() {
                 if (e.which === 13) { // 回车键
                     e.preventDefault();
                     const $this = $(this);
-                    const userAnswer = $this.text().trim();
                     const $quizContainer = $this.closest('.completion-quiz');
-                    const correctAnswer = $quizContainer.data('answer');
+                    const userAnswer = $this.text().trim();
+                    const correctAnswer = $quizContainer.attr('data-answer'); // 使用 attr 替代 data
 
+                    console.log('按下回车键');
                     console.log('用户输入:', userAnswer);
-                    console.log('正确答案:', correctAnswer);
-                    console.log('答案容器:', $quizContainer);
-                    console.log('答案数据属性:', $quizContainer.data());
+                    console.log('答案容器HTML:', $quizContainer.prop('outerHTML'));
+                    console.log('正确答案 (通过attr):', correctAnswer);
+                    console.log('正确答案 (通过data):', $quizContainer.data('answer'));
+
+                    // 确保有正确答案
+                    if (!correctAnswer) {
+                        console.error('错误：未能获取到正确答案');
+                        console.log('完整的答案容器:', $quizContainer[0]);
+                        return;
+                    }
 
                     // 移除之前的反馈
                     $this.siblings('.feedback, .correct-answer').remove();
@@ -83,25 +104,16 @@ function completion_quiz_inline_script() {
                         $this.css('background-color', 'pink')
                              .after('<span class="feedback">×</span>');
                         
-                        // 5秒后显示正确答案
                         setTimeout(() => {
                             console.log('开始显示正确答案');
                             console.log('正确答案内容:', correctAnswer);
                             
-                            // 确保正确答案存在
-                            if (!correctAnswer) {
-                                console.error('错误：未能获取到正确答案');
-                                return;
-                            }
-
-                            // 使用text()方法设置内容
                             $this.text(correctAnswer)
-                                 .css('background-color', '');
+                                .css('background-color', '');
                             
                             console.log('已设置答案到填空处');
                             console.log('当前填空内容:', $this.text());
-
-                            // 添加正确答案提示
+                            
                             $this.siblings('.feedback')
                                  .after('<span class="correct-answer">（正确答案：' + correctAnswer + '）</span>');
                             
