@@ -10,10 +10,19 @@ if (!defined('ABSPATH')) {
     exit; // 防止直接访问
 }
 
-// 插件主过滤器：修改文章内容
-add_filter('the_content', 'completion_quiz_transformer_content');
-
+// 添加在主函数开头
 function completion_quiz_transformer_content($content) {
+    // 如果不是文章内容，直接返回
+    if (!is_singular('post')) {
+        return $content;
+    }
+
+    // 添加调试模式检查
+    $debug = defined('WP_DEBUG') && WP_DEBUG;
+    if ($debug) {
+        error_log('Completion Quiz: 开始处理文章内容');
+    }
+    
     // 正则匹配斜体或粗体内容
     $pattern = '/<em>(.*?)<\/em>|<strong>(.*?)<\/strong>/i';
 
@@ -50,6 +59,9 @@ function completion_quiz_transformer_content($content) {
 
     return $content;
 }
+
+// 插件主过滤器：修改文章内容
+add_filter('the_content', 'completion_quiz_transformer_content');
 
 // 加载脚本和样式
 add_action('wp_enqueue_scripts', 'completion_quiz_enqueue_scripts');
