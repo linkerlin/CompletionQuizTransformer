@@ -45,11 +45,11 @@ jQuery(document).ready(function ($) {
                 if (cleanUserAnswer === cleanCorrectAnswer) {
                     console.log('答案正确！');
                     $this.css('background-color', 'lightgreen')
-                         .after('<span class="feedback">√</span>');
+                         .after('<span class="feedback">✅</span>');
                 } else {
                     console.log('答案错误，将在5秒后显示正确答案');
                     $this.css('background-color', 'pink')
-                         .after('<span class="feedback">×</span>');
+                         .after('<span class="feedback">❌</span>');
                     
                     setTimeout(() => {
                         console.log('开始显示正确答案');
