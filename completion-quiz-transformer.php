@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Completion Quiz Transformer
  * Description: 自动将文章正文中的关键语句改造成填空题，通过交互完成完形填空功能。
- * Version: 1.1
+ * Version: 1.2
  * Author: Halo Master
  */
 
@@ -69,17 +69,18 @@ function completion_quiz_inline_script() {
                     $this.siblings('.feedback').remove();
 
                     if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
-                        // 用户答案正确
-                        $this.text(correctAnswer).css('background-color', 'lightgreen')
-                             .after('<span class="feedback">√</span>');
+                        $this.css('background-color', 'lightgreen')
+                             .after('<span class="feedback">√</span>')
+                             .text(correctAnswer);  // 显示正确的大小写形式
                     } else {
-                        // 用户答案错误
                         $this.css('background-color', 'pink')
                              .after('<span class="feedback">×</span>');
                         
-                        // 5秒后直接填入正确答案
+                        // 5秒后自动填入正确答案
                         setTimeout(() => {
-                            $this.text(correctAnswer).css('background-color', 'lightyellow'); // 填空区域显示正确答案
+                            $this.text(correctAnswer)  // 填入正确答案
+                                .css('background-color', '');  // 移除背景色
+                            $this.siblings('.feedback').remove();  // 移除对错标记
                         }, 5000);
                     }
                 }
@@ -89,7 +90,7 @@ function completion_quiz_inline_script() {
             $(document).on('click', '.show-answers', function () {
                 $('.completion-quiz').each(function () {
                     const answer = $(this).data('answer');
-                    $(this).find('.fill-blank').text(answer).css('background-color', 'lightyellow');
+                    $(this).find('.fill-blank').text(answer);
                 });
             });
 
@@ -141,10 +142,6 @@ function completion_quiz_inline_style() {
             margin-right: 10px;
             padding: 5px 10px;
             cursor: pointer;
-        }
-
-        .completion-quiz .feedback {
-            font-size: 1rem;
         }
     </style>
     <?php
