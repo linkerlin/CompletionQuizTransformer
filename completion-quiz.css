@@ -1,0 +1,32 @@
+.completion-quiz {
+    display: inline-block;
+    position: relative;
+}
+
+.fill-blank {
+    display: inline-block;
+    min-width: 50px;
+    border-bottom: 2px dashed #000;
+    cursor: pointer;
+}
+
+.fill-blank:focus {
+    outline: none;
+    border-bottom: 2px solid #000;
+}
+
+.feedback {
+    margin-left: 5px;
+    font-weight: bold;
+    color: #000;
+}
+
+.completion-quiz-controls {
+    margin-top: 20px;
+}
+
+.completion-quiz-controls button {
+    margin-right: 10px;
+    padding: 5px 10px;
+    cursor: pointer;
+} 
