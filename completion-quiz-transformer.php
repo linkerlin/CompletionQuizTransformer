@@ -77,14 +77,13 @@ function completion_quiz_inline_script() {
                         
                         // 5秒后显示正确答案
                         setTimeout(() => {
-                            $this.text(correctAnswer)
+                            // 直接将正确答案填入填空区域
+                            $this.empty().append(document.createTextNode(correctAnswer))
                                 .css('background-color', '');
                             
-                            // 确保正确答案文本被正确插入
-                            if ($this.siblings('.correct-answer').length === 0) {
-                                $this.siblings('.feedback')
-                                     .after('<span class="correct-answer">（正确答案：' + correctAnswer + '）</span>');
-                            }
+                            // 添加正确答案提示
+                            $this.siblings('.feedback')
+                                 .after('<span class="correct-answer">（正确答案：' + correctAnswer + '）</span>');
                         }, 5000);
                     }
                 }
